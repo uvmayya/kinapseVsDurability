@@ -1,0 +1,27 @@
+
+path="C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017"; //path of the directory
+dName="062317_halfLife20umSpotLowDens"; //directory of all the relevant datasets
+fName="mem082_60minOn"; //file name in the directory of the particular dataset
+iName="mem082"; //image series or the dataset name
+
+// for each panel in the field
+for (i=1; i<=2; i++){
+
+File.makeDirectory(path+File.separator+dName+File.separator+"anals"+File.separator+iName
++"_"+i); // folder to store processed images
+
+open(""+path+"\\"+dName+"\\"+fName+"\\A_Image000"+i+"_01.oif");
+run("Split Channels");
+
+selectWindow("C1-A_Image000"+i+"_01.oif");
+run("Remove Outliers...", "radius=8 threshold=25 which=Bright stack");
+run("Enhance Contrast...", "saturated=0 normalize process_all");
+run("8-bit");
+selectWindow("C2-A_Image000"+i+"_01.oif");
+run("8-bit");
+
+run("Merge Channels...", "c1=C1-A_Image000"+i+"_01.oif c2=C2-A_Image000"+i+"_01.oif create");
+run("Image Sequence... ", "format=TIFF name="+fName+"_"+i+" digits=3 save="+path+"\\"+dName+"\\anals\\"+iName+"_"+i+"\\"+fName+"_"+i+"_t001_c001.tif");
+//close();
+
+}

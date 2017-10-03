@@ -1,0 +1,18 @@
+//make sure to create the folder for saving the image series
+
+//copied from panelProcessingSavingMacroIJ
+
+fName="2o2co_190minOn.oif"
+open("C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017\\070717_088_costimSampling10um\\"+fName+"");
+run("Split Channels");
+
+selectWindow("C1-"+fName+"");
+run("Remove Outliers...", "radius=8 threshold=25 which=Bright stack");
+run("Enhance Contrast...", "saturated=0 normalize process_all");
+run("8-bit");
+selectWindow("C2-"+fName+"");
+run("8-bit");
+
+run("Merge Channels...", "c1=C1-"+fName+" c2=C2-"+fName+" create");
+run("Image Sequence... ", "format=TIFF name=2o2co_190minOn digits=3 save=C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017\\070717_088_costimSampling10um\\anals\\2o2co_088_2\\2o2co_190minOn_t001_c001.tif");
+//close();

@@ -1,0 +1,55 @@
+path="C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017"; //path of the directory
+dName="062317_halfLife20umSpotLowDens"; //directory of all the relevant datasets
+fName="mem082_60minOn"; //file name in the directory of the particular dataset
+iName="mem082"; //image series or the dataset name
+nslices=150; //typically 150
+
+// for each panel in the field
+for (i=1; i<=2; i++){
+
+File.makeDirectory(path+File.separator+dName+File.separator+"anals"+File.separator+"masked_"+iName+"_"+i); // folder to save masked images
+
+run("Image Sequence...", "open="+path+"\\"+dName+"\\anals\\"+iName+"_"+i+"\\"+fName+"_"+i+"_t001_c001.tif number="+nslices+" increment=2 sort");
+run("Bandpass Filter...", "filter_large=40 filter_small=3 suppress=None tolerance=5 autoscale process");
+//setAutoThreshold("Default");
+//run("Threshold...");
+//setOption("BlackBackground", true);
+run("Convert to Mask", "method=Default background=Light calculate black");
+selectWindow(""+iName+"_"+i+"");
+run("Invert LUT"); //This was critical for Dilate and image-calculator operation to work
+run("Dilate", "stack"); 
+run("Dilate", "stack");
+run("Dilate", "stack");
+//run("Dilate", "stack"); //additional, not typical
+run("Fill Holes", "stack");
+
+newImage("spots", "8-bit black", 512, 512, nslices);
+open(""+path+"\\"+dName+"\\anals\\spot_"+iName+"_"+i+".tif");
+imageCalculator("Add stack", "spots","spot_"+iName+"_"+i+".tif");
+selectWindow("spot_"+iName+"_"+i+".tif");
+run("Invert LUT");
+selectWindow("spots");
+//setAutoThreshold("Default");
+//run("Threshold...");
+//setAutoThreshold("Default dark");
+run("Convert to Mask", "method=Default background=Dark calculate black");
+run("Invert LUT"); //This was critical for Dilate and image-calculator operation to work
+run("Dilate", "stack"); 
+run("Dilate", "stack");
+run("Dilate", "stack");
+run("Dilate", "stack");
+imageCalculator("AND stack", "spots",""+iName+"_"+i+"");
+selectWindow(""+iName+"_"+i+"");
+close();
+selectWindow("spots");
+
+run("Image Sequence...", "open="+path+"\\"+dName+"\\anals\\"+iName+"_"+i+"\\"+fName+"_"+i+"_t001_c002.tif number="+nslices+" starting=2 increment=2 sort");
+imageCalculator("AND stack", ""+iName+"_"+i+"","spots");
+selectWindow("spots");
+close();
+selectWindow(""+iName+"_"+i+"");
+run("Macro...", "code=if(v==0){v=110;} stack");
+run("Image Sequence... ", "format=TIFF name="+fName+"_"+i+"_ start=0 digits=3 save="+path+"\\"+dName+"\\anals\\masked_"+iName+"_"+i+"\\"+fName+"_"+i+"_000.tif");
+//close();
+
+}

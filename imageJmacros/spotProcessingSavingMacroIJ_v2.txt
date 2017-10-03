@@ -1,0 +1,20 @@
+//setTool("rectangle");
+
+dName="062317_halfLife20umSpotLowDens"; //directory 
+fName="mem082_field"; //spot-panels file; actually a folder, but this is the dataset of 4 panels
+iName="mem082"; //image; the name I give for the dataset in the anals folder
+
+//for each panel in the fName
+for (i=1; i<=2; i++){
+
+open("C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017\\"+dName+"\\"+fName+"\\Image000"+i+"_01.oif");
+run("Split Channels");
+run("Median...", "radius=2");
+run("Enhance Contrast...", "saturated=0 normalize");
+run("8-bit");
+saveAs("Tiff", "C:\\Users\\vmayya\\Documents\\dataOx\\IX83_FV1200\\2017\\"+dName+"\\anals\\spot_"+iName+"_"+i+".tif");
+close(); //closes the saved image in order to make sure the same image is not stored as the next panel.
+selectWindow("C1-Image000"+i+"_01.oif");
+close();
+
+}
