@@ -60,8 +60,8 @@ for cp=1:length(datacell)
             
             %to confirm and home in on the true positionally confZone 
             meanTop10dist=35; % initialize to high distance so that the while loop below runs atleast once
-            tByRsq=(endPhase-startPhase+1)/(meanTop10dist^2); % this needs to be a constant or high to keep the same log-psi
-            while(tByRsq<1.50 && endPhase-startPhase>10) % at least for 5 minutes (10 steps) & happens to have larger confinement zone on time-relative terms
+            RsqByT=(meanTop10dist^2)/(endPhase-startPhase+1); % this needs to be a constant or low to keep the same log-psi
+            while(RsqByT>0.66 && endPhase-startPhase>10) % at least for 5 minutes (10 steps) & happens to have larger confinement zone on time-relative terms
                 vectorLength=(endPhase-startPhase+1)*(endPhase-startPhase)/2; % based on combination formula of factorials
                 dist=zeros(vectorLength,1); % initialize 
                 distInd=1; 
@@ -75,8 +75,8 @@ for cp=1:length(datacell)
                 end
                 dist=sort(dist, 'descend');
                 meanTop10dist=mean(dist(1:10)); % gives diameter of the confined zone
-                tByRsq=(endPhase-startPhase+1)/(meanTop10dist^2); % this needs to be a constant or high to keep the same log-psi
-                if tByRsq>=1.50 % turned out to be very cir
+                RsqByT=(meanTop10dist^2)/(endPhase-startPhase+1); % this needs to be a constant or low to keep the same log-psi
+                if RsqByT<=0.66 % turned out to be very cir
                     confZone(startPhase:endPhase)=1;
                     break;  % you have identified the zone with positional stability
                 else % clip-off points from either or both ends to see if positional confinement improves in the next iteration
